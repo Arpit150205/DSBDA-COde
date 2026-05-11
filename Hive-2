@@ -1,0 +1,130 @@
+Hive Commad-2
+
+Yes — these are the practical commands that actually executed correctly and produced output on your system. Based on your logs, the following definitely worked.
+Commands With Successful Output
+1. Start Hive Local Mode
+beeline -u "jdbc:hive2:///;transportMode=local"
+✅ Successful connection.
+
+2. Show Databases
+SHOW DATABASES;
+✅ Output appeared.
+
+3. Create Database
+CREATE DATABASE flightdb;
+✅ Database created.
+
+4. Use Database
+USE flightdb;
+✅ Database selected.
+
+5. Create Flights Table
+CREATE TABLE flights (
+    flight_id INT,
+    airline STRING,
+    source STRING,
+    destination STRING,
+    departure_delay INT,
+    flight_date STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+✅ Table created.
+
+6. Show Tables
+SHOW TABLES;
+✅ Output showed tables.
+
+7. Load CSV Data
+LOAD DATA LOCAL INPATH '/Users/arpit/flights.csv'
+INTO TABLE flights;
+✅ Data loaded.
+
+8. Select Data
+SELECT * FROM flights;
+✅ Records displayed successfully.
+
+9. Insert New Record
+SET hive.execution.engine=mr;
+SET mapreduce.framework.name=local;
+INSERT INTO flights VALUES
+(5,'Akasa','Mumbai','Goa',25,'2008-01-03');
+✅ Insert successful.
+
+10. Alter Table
+ALTER TABLE flights
+ADD COLUMNS (status STRING);
+✅ Column added.
+
+11. Describe Table
+DESCRIBE flights;
+✅ Table structure displayed.
+
+12. Create External Table
+CREATE EXTERNAL TABLE ext_flights (
+    flight_id INT,
+    airline STRING,
+    source STRING,
+    destination STRING,
+    departure_delay INT,
+    flight_date STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LOCATION '/tmp/ext_flights';
+✅ External table created.
+
+13. Create Airlines Table
+CREATE TABLE airlines (
+    airline STRING,
+    country STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+✅ Table created.
+
+14. Insert Into Airlines
+INSERT INTO airlines VALUES
+('Indigo','India'),
+('AirIndia','India'),
+('SpiceJet','India'),
+('Vistara','India'),
+('Akasa','India');
+✅ Insert successful.
+
+15. Average Departure Delay Query
+SELECT flight_date,
+AVG(departure_delay) AS avg_delay
+FROM flights
+WHERE flight_date LIKE '2008%'
+GROUP BY flight_date;
+✅ Analytical query works and gives output.
+
+Commands That Were Correct But Failed Due to Environment
+JOIN Query
+SELECT f.flight_id,
+       f.airline,
+       a.country
+FROM flights f
+JOIN airlines a
+ON (f.airline = a.airline);
+SQL syntax is correct ✅ Execution failed because of Hive local MapReduce issue on macOS ❌
+
+Index Commands
+These may fail on Hive 4 because indexes are deprecated:
+CREATE INDEX flight_index
+ON TABLE flights (airline)
+AS 'COMPACT'
+WITH DEFERRED REBUILD;
+So if index failed, it is normal in newer Hive versions.
+
+
+>hdfs dfs -mkdir -p /tmp/ext_flights
+
+>hdfs dfs -put flights.csv /tmp/ext_flights
+
+>hdfs dfs -ls /tmp/ext_flights
+
+>hdfs dfs -ls /tmp
+>hdfs dfs -put flights.csv />tmp/ext_flights
+hdfs dfs -ls /tmp/ext_flights
