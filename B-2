@@ -1,0 +1,137 @@
+B-2 code
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+
+# Load datasets
+air = pd.read_csv("AirQuality.csv",sep=';')
+heart = pd.read_csv("heart.csv",sep=',')
+
+# Display first 5 rows
+print(air.head())
+print(heart.head())
+
+print(air.isnull().sum())
+print(heart.isnull().sum())
+
+air.fillna(air.mean(numeric_only=True), inplace=True)
+heart.fillna(heart.mean(numeric_only=True), inplace=True)
+
+air = air.drop_duplicates()
+heart = heart.drop_duplicates()
+
+print(air.dtypes)
+print(heart.dtypes)
+
+
+air['ID'] = range(1, len(air)+1)
+heart['ID'] = range(1, len(heart)+1)
+
+# Merge datasets
+merged_data = pd.merge(air, heart, on='ID',how='inner')
+
+print(merged_data.head())
+
+merged_data.head()
+
+le = LabelEncoder()
+
+for col in merged_data.columns:
+    if merged_data[col].dtype == 'object':
+        merged_data[col] = le.fit_transform(merged_data[col])
+
+print(merged_data.head())
+
+print(merged_data.dtypes)
+
+scaler = StandardScaler()
+
+scaled_features = scaler.fit_transform(
+    merged_data.drop('target', axis=1)
+)
+
+X = pd.DataFrame(scaled_features,
+                 columns=merged_data.drop('target', axis=1).columns)
+
+y = merged_data['target']
+
+print(X.head())
+
+plt.figure(figsize=(10,5))
+sns.boxplot(data=merged_data)
+plt.xticks(rotation=90)
+plt.show()
+
+merged_data = merged_data[(merged_data.select_dtypes(include=np.number) >= 0).all(axis=1)]
+
+merged_data['age'] = merged_data['age'].astype(int)
+
+merged_data = merged_data.dropna(subset=['target'])
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42
+)
+
+model = LogisticRegression()
+
+model.fit(X_train, y_train)
+
+print(y.isnull().sum())
+
+print(X.isnull().sum())
+
+X = X.drop(columns=['Unnamed: 15', 'Unnamed: 16'])
+
+# Scaling
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
+# Split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42
+)
+
+# Model
+model = LogisticRegression()
+
+
+# Train
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+print(y_pred)
+
+
+from sklearn.metrics import accuracy_score
+
+accuracy = accuracy_score(y_test, y_pred)
+
+print("Accuracy:", accuracy)
+
+
+from sklearn.metrics import classification_report
+
+print(classification_report(y_test, y_pred))
+
+from sklearn.metrics import confusion_matrix
+
+print(confusion_matrix(y_test, y_pred))
+
+
+
+
+
+
+  
