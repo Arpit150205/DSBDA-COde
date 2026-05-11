@@ -1,0 +1,29 @@
+B-1 Code
+
+import pandas as pd
+df=pd.read_csv("Dataset_Facebook.csv",sep=';')
+df.head()
+subset_col=df[['Type','Category','Page total likes','Paid']]
+subset_col.head()
+subset_row=df[df['Type']=='Photo']
+subset_row
+subset = df.loc[df['Type']=='Photo',['Type','Category','Post Month']]
+subset
+df2=pd.read_csv("pseudo_facebook.csv")
+df2
+merged = pd.merge(df,df2,left_on='like',right_on='likes',how='inner')
+merged
+sorted_df=df.sort_values(by='Page total likes',ascending=True)
+sorted_df
+sorted_multi=df.sort_values(by=['Page total likes','Lifetime Post Total Reach'],ascending=[True,False])
+sorted_multi
+trans_df=df.T
+trans_df.head()
+df.shape
+trans_df.shape
+melted=pd.melt(df,id_vars=['Type'],value_vars=['like','Category'])
+melted
+pivot_table=df.pivot_table(values='like',index='Type',columns='Post Month')
+pivot_table
+stacked=df.stack()
+unstacked=stacked.unstack()
