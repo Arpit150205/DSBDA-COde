@@ -1,0 +1,148 @@
+Scrapper 
+
+Yes. Since this is usually a college practical, the easiest way is to use a simple ecommerce demo website instead of Amazon/Flipkart because they block scraping quickly.
+Follow these exact steps on your college lab PC.
+
+Step 1: Open Terminal / CMD
+On Windows:
+* Press Windows + R
+* Type cmd
+* Press Enter
+Check Python:
+python --version
+or
+py --version
+If Python is not installed: Download from:
+Python Official Website
+While installing: ✅ Tick "Add Python to PATH"
+
+Step 2: Install Required Libraries
+Run these commands one by one:
+pip install requests
+pip install beautifulsoup4
+If pip does not work:
+python -m pip install requests beautifulsoup4
+
+Step 3: Create Python File
+Create a folder on Desktop:
+ReviewScraper
+Inside it create:
+scraper.py
+Open it in Notepad or VS Code.
+
+Step 4: Paste This Working Code
+Use this demo ecommerce review website:
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://webscraper.io/test-sites/e-commerce/static/product/518"
+
+headers = {
+    "User-Agent": "Mozilla/5.0"
+}
+
+response = requests.get(url, headers=headers)
+
+soup = BeautifulSoup(response.text, "html.parser")
+
+# Product Name
+product_name = soup.find("h4", class_="title").text.strip()
+
+print("\nProduct:", product_name)
+print("=" * 50)
+
+# Reviews
+reviews = soup.find_all("div", class_="review-item")
+
+for i, review in enumerate(reviews, start=1):
+
+    customer = review.find("span", class_="review-author").text.strip()
+
+    rating = len(review.find_all("span", class_="ws-icon-star"))
+
+    comment = review.find("p", class_="review-content").text.strip()
+
+    print(f"\nReview {i}")
+    print("Customer Name :", customer)
+    print("Rating        :", rating)
+    print("Comment       :", comment)
+
+Step 5: Save the File
+Save as:
+scraper.py
+
+Step 6: Run the Program
+Go to that folder in CMD:
+Example:
+cd Desktop\ReviewScraper
+Run:
+python scraper.py
+
+Step 7: Expected Output
+You will see something like:
+Product: Lenovo Thinkpad
+
+Review 1
+Customer Name : John
+Rating        : 5
+Comment       : Very good product
+
+Review 2
+Customer Name : Alex
+Rating        : 4
+Comment       : Worth buying
+
+What This Project Does
+Your project is fetching:
+* Product Name
+* Customer Name
+* Ratings
+* Comments/Reviews
+from a live ecommerce webpage using Python.
+
+Viva Questions They May Ask
+Why use BeautifulSoup?
+To extract HTML data from websites.
+
+Why use requests library?
+To send HTTP requests and get webpage content.
+
+What is web scraping?
+Automatically extracting data from websites.
+
+What is HTML parser?
+It converts webpage HTML into readable Python objects.
+
+If College Asks “Real Time Reviews”
+Say:
+"The scraper fetches live reviews directly from the ecommerce webpage every time the program runs."
+
+If They Ask Why Amazon/Flipkart Not Used
+Say:
+"Major ecommerce websites use anti-bot protection and CAPTCHA, so demo ecommerce sites are used for educational purposes."
+
+Optional Improvement (Very Important for Marks)
+You can also save reviews into CSV.
+Add this code at the end:
+import csv
+
+with open("reviews.csv", "w", newline="", encoding="utf-8") as file:
+
+    writer = csv.writer(file)
+
+    writer.writerow(["Customer Name", "Rating", "Comment"])
+
+    for review in reviews:
+
+        customer = review.find("span", class_="review-author").text.strip()
+
+        rating = len(review.find_all("span", class_="ws-icon-star"))
+
+        comment = review.find("p", class_="review-content").text.strip()
+
+        writer.writerow([customer, rating, comment])
+
+print("\nData saved to reviews.csv")
+This creates:
+reviews.csv
+which opens in Excel.
